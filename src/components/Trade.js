@@ -3,6 +3,7 @@ import SubmitButton from "./SubmitButton";
 import ShareAmount from "./ShareAmount";
 import styled from "styled-components";
 import SelectTrade from "./SelectTrade";
+import SearchBar from "./SearchBar";
 
 export default class Trade extends Component {
   render() {
@@ -12,6 +13,9 @@ export default class Trade extends Component {
       <Table>
         <tbody>
           <tr>
+            <td>
+              <SearchBar />
+            </td>
             <td>
               <SelectTrade
                 name={"trade"}

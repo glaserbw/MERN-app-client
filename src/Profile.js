@@ -7,6 +7,7 @@ import ProgressBar from "./components/ProgressBar";
 import StockTable from "./components/StockTable";
 import LineChart from "./chart/LineChart";
 import Trade from "./components/Trade";
+import SearchBar from "./components/SearchBar";
 
 import { SERVER_URL } from "./constants/globals";
 import axios from "axios";
@@ -146,6 +147,7 @@ class Profile extends Component {
             <b>${this.state.workingCapital.toFixed(2)}</b>
           </p>
           <LineChart symbol={activeSymbol} />
+
           <Trade
             max={max}
             currentPrice={currentPrice}
@@ -158,7 +160,6 @@ class Profile extends Component {
             tradeArray={tradeArray}
           />
 
-          <h2>Buy some new stocks!</h2>
           <StockTable handleClick={this.handleClick} />
         </div>
       );
