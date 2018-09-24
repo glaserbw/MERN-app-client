@@ -7,7 +7,7 @@ body {
 
 nav {
   width: 100%;
-  background-image: linear-gradient(-90deg, #77d9d4, #57BC90);
+  background-image: linear-gradient(#57BC90, #77d9d4);
   padding: 10px 0;
 }
 
@@ -41,3 +41,6 @@ h2 {
   max-width: 960px;
   margin: 0 auto;
 }
+
+
+/*-90deg,*/
