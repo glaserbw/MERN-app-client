@@ -7,9 +7,10 @@ import getCurrentValue from "./getCurrentValue";
 import ProgressBar from "./components/ProgressBar";
 import StockTable from "./components/StockTable";
 import LineChart from "./chart/LineChart";
+import Trade from "./components/Trade";
 import TradeForm from "./components/TradeForm";
 
-  import { SERVER_URL, STARTING_CAPITAL } from "./constants/globals";
+import { SERVER_URL, STARTING_CAPITAL } from "./constants/globals";
 import axios from "axios";
 
 class Profile extends Component {
@@ -22,23 +23,29 @@ class Profile extends Component {
       activeSymbol: "ATVI",
       portfolioValue: 0,
       userOwnsIndex: null,
-      tradeType: 'Buy',
+      tradeType: "Buy",
       shares: 0
     };
   }
 
   handleTradeSelection = e => {
     if (this.state.userOwnsIndex >= 0) {
-      this.setState({ tradeType: e.target.value});
+      this.setState({ tradeType: e.target.value });
     }
   };
 
   incrementShares = e => {
-    const { shares, currentPrice, workingCapital, portfolio, userOwnsIndex } = this.state;
+    const {
+      shares,
+      currentPrice,
+      workingCapital,
+      portfolio,
+      userOwnsIndex
+    } = this.state;
     e.preventDefault();
-    if ( this.state.tradeType === 'Sell' ) {
+    if (this.state.tradeType === "Sell") {
       // Prevent user from selling more shares then they own
-      if ( portfolio[userOwnsIndex].numShares >= shares ) {
+      if (portfolio[userOwnsIndex].numShares >= shares) {
         this.setState({ shares: this.state.shares + 1 });
       }
     } else if (shares * currentPrice < workingCapital) {
@@ -49,7 +56,7 @@ class Profile extends Component {
 
   decreaseShares = e => {
     const { shares } = this.state;
-    if (shares > 0 ) {
+    if (shares > 0) {
       this.setState({ shares: shares - 1 });
     }
   };
@@ -58,18 +65,23 @@ class Profile extends Component {
     e.preventDefault();
     // Make sure at least 1 share is being traded.
     if (this.state.shares > 0) {
-      const { shares, tradeType, activeSymbol, portfolio, userOwnsIndex } = this.state;
-      
+      const {
+        shares,
+        tradeType,
+        activeSymbol,
+        portfolio,
+        userOwnsIndex
+      } = this.state;
+
       // Make new items to be set in state.
-      let newPortfolio = [...portfolio];    
-      let newWorkingCapital = this.state.workingCapital
+      let newPortfolio = [...portfolio];
+      let newWorkingCapital = this.state.workingCapital;
       let newPortfolioValue = this.state.portfolioValue;
 
       // Calculate the trade value
       const tradeValue = this.state.currentPrice * shares;
 
-      if (tradeType === 'Buy') {
-
+      if (tradeType === "Buy") {
         // Handle case for user buying more shares of already owned stock
         if (userOwnsIndex >= 0) {
           newPortfolio[userOwnsIndex].numShares += shares;
@@ -78,15 +90,14 @@ class Profile extends Component {
           const newStock = {
             symbol: activeSymbol,
             numShares: shares
-          }
+          };
           newPortfolio.push(newStock);
         }
 
         // Calculate changes to working capital and portfolio value
         newWorkingCapital -= tradeValue;
         newPortfolioValue += tradeValue;
-
-      } else if (tradeType === 'Sell') {
+      } else if (tradeType === "Sell") {
         newPortfolio[userOwnsIndex].numShares -= shares;
 
         // If user has sold all shares of a stock, remove it from the portfolio
@@ -104,7 +115,7 @@ class Profile extends Component {
         portfolioValue: newPortfolioValue,
         workingCapital: newWorkingCapital,
         shares: 0,
-        tradeType: 'Buy',
+        tradeType: "Buy"
       });
 
       axios.put(`${SERVER_URL}/users/${this.props.user.id}`, {
@@ -130,12 +141,14 @@ class Profile extends Component {
       }/ohlc`;
       const response = await fetch(url);
       const parse = await response.json();
-    
+
       this.setState({
         workingCapital,
         portfolio,
         currentPrice: parse.close.price,
-        userOwnsIndex: portfolio.findIndex(stock => stock.symbol === this.state.activeSymbol),
+        userOwnsIndex: portfolio.findIndex(
+          stock => stock.symbol === this.state.activeSymbol
+        )
       });
     }
   }
@@ -144,8 +157,10 @@ class Profile extends Component {
     this.setState({
       activeSymbol: e.target.dataset.symbol,
       currentPrice: e.target.dataset.price,
-      tradeType: 'Buy',
-      userOwnsIndex: this.state.portfolio.findIndex(stock => stock.symbol === e.target.dataset.symbol),
+      tradeType: "Buy",
+      userOwnsIndex: this.state.portfolio.findIndex(
+        stock => stock.symbol === e.target.dataset.symbol
+      )
     });
   };
 
@@ -165,10 +180,11 @@ class Profile extends Component {
             initialCapital={STARTING_CAPITAL}
           />
           <p>
-            Portfolio Value <b>${this.state.portfolioValue}</b> | Cash on hand{" "}
-            <b>${this.state.workingCapital.toFixed(2)}</b>
+            Portfolio Value <b>${this.state.portfolioValue.toFixed(2)}</b> |
+            Cash on hand <b>${this.state.workingCapital.toFixed(2)}</b>
           </p>
           <LineChart symbol={activeSymbol} />
+
           <TradeForm
             userOwns={this.state.userOwnsIndex}
             trade={tradeType}
